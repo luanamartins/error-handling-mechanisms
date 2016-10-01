@@ -16,13 +16,11 @@ function getRepo(author, project) {
 function getPairsFromCommits(datum) {
 	const getProductionTestPairsFromCommits = require('./src/get-production-test-pairs-from-commits');
 	
-	//const remoteRepo = getRepo('adamfisk', 'LittleProxy');
 	var credentials = getCredentials(datum.gh_project_name);
 	const remoteRepo = getRepo(credentials.author, credentials.projectName);
 
-	//const gitCommit = '7470d0c61e7321a8d2db7e4639408669673c0b31';
 	const gitCommit = datum.git_commit;
-	//const gitCommits = '531cc0f7e36daaef58a1e20820a217b40eb42509#6c0c29bdbd1a8246195ec7e7893cc78a09d8c6bd#8c62dc0dc508218723150dcffbd32d8e1d717335';
+	
 	const gitCommits = datum.git_commits;
 	
 	getProductionTestPairsFromCommits(remoteRepo, gitCommit, gitCommits)
@@ -39,16 +37,17 @@ function getCredentials(fullProjectName){
 
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : '< MySQL username >',  
-  password : '< MySQL password >',
-  database : '< MySQL schema name >'
+   host : process.env.DATABASE_HOST,
+  user : process.env.DATABASE_USER,
+  password : process.env.DATABASE_PASSWORD,
+  database : process.env.DATABASE_SCHEMA_NAME
 });
 
 connection.connect();
 
-var javaProjectsQuery = 'SELECT * from travistorrent_7_9_2016 WHERE gh_test_churn > 0 AND gh_lang LIKE  \"java\" LIMIT 100';
+var javaProjectsQuery = 'SELECT * from travistorrent_7_9_2016 WHERE gh_test_churn > 0 AND gh_lang LIKE  \"java\" LIMIT 50';
 var rubyProjectsQuery = 'SELECT * from travistorrent_7_9_2016 WHERE gh_test_churn > 0 AND gh_lang LIKE  \"ruby\" LIMIT 10';
+var countJavaProjects = 'SELECT COUNT(*) from  travistorrent_7_9_2016 WHERE gh_test_churn > 0 AND gh_lang LIKE  \"java\"';
 
 connection.query(javaProjectsQuery,  function(err, rows, fields) {
   if (!err) {
@@ -59,5 +58,15 @@ connection.query(javaProjectsQuery,  function(err, rows, fields) {
     console.log('Error while performing Query.');
   }
 });
+
+/*connection.query(countJavaProjects,  function(err, rows, fields) {
+  if (!err) {
+		console.log(rows);
+	);
+  } else {
+    console.log('Error while performing Query.');
+  }
+});
+*/
 
 connection.end();
