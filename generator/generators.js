@@ -1,5 +1,5 @@
 function* generatorFn () {
-  console.log('look ma I was suspended')
+  console.log('I was suspended');
 }
 var generator = generatorFn() // [1]
 setTimeout(function () {
