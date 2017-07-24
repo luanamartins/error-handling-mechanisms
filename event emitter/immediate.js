@@ -8,6 +8,7 @@ myEE.on('event', (a, b) => {
   });
   console.log("papel");
 });
+
 myEE.emit('event', 'a', 'b');
 for(var i = 0; i < 2; i++){
 	console.log("Olá");
